@@ -1,10 +1,14 @@
 using Godot;
 using GWJ87.Globals;
+using GWJ87.Scenes.Effects;
 using GWJ87.Scenes.Entities.Cats;
 
 public partial class Home : Node2D
 {
     [Export] public Cat CatObj { get; private set; }
+
+    private PackedScene packedRainEffect = GD.Load<PackedScene>("res://Scenes/Effects/rain_particle_effects.tscn");
+    private RainParticleEffects unpackedRain = null;
 
     private NavigationRegion2D NavRegion;
     private Marker2D FoodBowlMarker;
@@ -22,6 +26,17 @@ public partial class Home : Node2D
         SignalManager.Instance.StartFeedRoutine += OnFeedRoutineStarted;
         SignalManager.Instance.RequestRandomPosition += OnRequestRandomPosition;
         SignalManager.Instance.StartSleepRoutine += OnSleepRoutineStarted;
+    }
+
+    public override void _Process(double delta)
+    {
+        if (unpackedRain == null)
+        {
+            unpackedRain = packedRainEffect.Instantiate<RainParticleEffects>();
+            AddChild(unpackedRain);
+        }
+
+        unpackedRain.GlobalPosition = GetGlobalMousePosition();
     }
 
     public override void _Input(InputEvent @event)
@@ -45,6 +60,11 @@ public partial class Home : Node2D
         {
             CatObj.SetColor(Cat.CAT_COLORS.GREY);
             CatObj.SetAnimation(Cat.CAT_ANIMATIONS.IDLE);
+
+            var packedRainParticles = GD.Load<PackedScene>("res://Scenes/Effects/rain_particle_effects.tscn");
+            RainParticleEffects unpackedRain = packedRainParticles.Instantiate<RainParticleEffects>();
+            AddChild(unpackedRain);
+            unpackedRain.GlobalPosition = new Vector2(200, 200);
         }
         else if (@event.IsActionPressed("move_right"))
         {

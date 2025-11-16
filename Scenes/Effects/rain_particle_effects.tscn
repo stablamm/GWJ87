@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=3 uid="uid://bbk54iqw63xnn"]
+
+[ext_resource type="Script" uid="uid://bg2bypypvnigo" path="res://Scenes/Effects/RainParticleEffects.cs" id="1_k0yax"]
+
+[sub_resource type="Gradient" id="Gradient_4niyb"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0.037563547, 0.2754232, 0.9999327, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_k0yax"]
+gradient = SubResource("Gradient_4niyb")
+width = 2
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_mo066"]
+lifetime_randomness = 0.25
+particle_flag_disable_z = true
+gravity = Vector3(0, 98, 0)
+turbulence_enabled = true
+turbulence_noise_strength = 1.92
+turbulence_noise_speed_random = 3.05
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_k0yax"]
+radius = 53.0
+height = 166.0
+
+[node name="RainParticleEffects" type="Node2D"]
+script = ExtResource("1_k0yax")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+amount = 32
+texture = SubResource("GradientTexture1D_k0yax")
+lifetime = 3.8
+speed_scale = 2.7
+randomness = 1.0
+trail_enabled = true
+trail_sections = 16
+trail_section_subdivisions = 8
+process_material = SubResource("ParticleProcessMaterial_mo066")
+
+[node name="InteractArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
+position = Vector2(1, 61)
+shape = SubResource("CapsuleShape2D_k0yax")
