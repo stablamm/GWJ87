@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://crixpn71ibskc"]
+
+[ext_resource type="Texture2D" uid="uid://gmfrg8bdo3wi" path="res://Assets/Decorations/CatRoomDecorations.png" id="1_ffv8t"]
+
+[node name="WindowRegular" type="Node2D"]
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_ffv8t")
+region_enabled = true
+region_rect = Rect2(19, 1, 61, 95)

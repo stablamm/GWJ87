@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://dkoth1gje81m4"]
+
+[ext_resource type="Texture2D" uid="uid://gmfrg8bdo3wi" path="res://Assets/Decorations/CatRoomDecorations.png" id="1_jtg06"]
+
+[node name="FoodBowl" type="Node2D"]
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_jtg06")
+region_enabled = true
+region_rect = Rect2(264, 432, 48, 48)

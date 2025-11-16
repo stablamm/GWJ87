@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://ca8ipqvfisvil"]
+
+[ext_resource type="Texture2D" uid="uid://gmfrg8bdo3wi" path="res://Assets/Decorations/CatRoomDecorations.png" id="1_jaykn"]
+
+[node name="PottedPlant" type="Node2D"]
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_jaykn")
+region_enabled = true
+region_rect = Rect2(128, 192, 32, 32)

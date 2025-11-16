@@ -1,0 +1,80 @@
+[gd_scene load_steps=17 format=3 uid="uid://cvxi5u0qh5s0y"]
+
+[ext_resource type="Texture2D" uid="uid://40f3vro8d6u0" path="res://Assets/Rooms/Room1.png" id="1_pdm55"]
+[ext_resource type="Script" uid="uid://crjaxs0f7b2rx" path="res://Scenes/Homes/Home.cs" id="1_tcsw8"]
+[ext_resource type="PackedScene" uid="uid://qm3cvsipfpbv" path="res://Scenes/Entities/Cats/cat.tscn" id="2_xcs4j"]
+[ext_resource type="PackedScene" uid="uid://5uvv5xcpathi" path="res://Scenes/Objects/shelf.tscn" id="4_ijikq"]
+[ext_resource type="PackedScene" uid="uid://brx3th71vaph6" path="res://Scenes/Objects/cat_bed.tscn" id="5_cnulb"]
+[ext_resource type="PackedScene" uid="uid://dlfs0jnqmljig" path="res://Scenes/Objects/window_blinds.tscn" id="6_86718"]
+[ext_resource type="PackedScene" uid="uid://bibeg4ugckecf" path="res://Scenes/Objects/cat_poster_1.tscn" id="7_7jr3y"]
+[ext_resource type="PackedScene" uid="uid://ca8ipqvfisvil" path="res://Scenes/Objects/potted_plant.tscn" id="8_3lay1"]
+[ext_resource type="PackedScene" uid="uid://c0vwf563d2ay3" path="res://Scenes/Objects/floral_poster.tscn" id="8_buva5"]
+[ext_resource type="PackedScene" uid="uid://dkoth1gje81m4" path="res://Scenes/Objects/food_bowl.tscn" id="9_gdnq8"]
+[ext_resource type="PackedScene" uid="uid://ce5wiehusx44f" path="res://Scenes/Objects/water_bowl.tscn" id="10_1pwa2"]
+[ext_resource type="PackedScene" uid="uid://crixpn71ibskc" path="res://Scenes/Objects/window_regular.tscn" id="11_5d6rq"]
+[ext_resource type="PackedScene" uid="uid://cgw0oymp2fkl6" path="res://Scenes/Objects/plant.tscn" id="12_7kesi"]
+[ext_resource type="PackedScene" uid="uid://b56cfsxwpxe22" path="res://Scenes/Objects/cat_tree.tscn" id="13_x5f03"]
+[ext_resource type="PackedScene" uid="uid://dju11ohs16vte" path="res://Scenes/UI/cat_terminal.tscn" id="15_ua51m"]
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_ua51m"]
+vertices = PackedVector2Array(601.5, 443.60938, 641.5469, 468.1797, 448.14063, 566.6719, 406.1797, 489.4297, 399.9375, 334.70313, 366.0703, 486.46094, 332.3828, 583.6719, 110.27344, 465.46094, 271.52344, 368.32813, 357.9922, 338.28906, 441.10938, 301, 638.96094, 409.09375, 245.9375, 339.78906, 313.03125, 303.85156)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(4, 5, 6, 7, 8, 9), PackedInt32Array(4, 10, 11, 0, 3, 5), PackedInt32Array(8, 12, 13, 9)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(314, 292, 230, 337, 256, 366, 90, 466, 338, 598, 373, 497, 400, 499, 444, 580, 662, 469, 618, 442, 656, 407, 440, 289, 396, 325, 361, 328)])
+
+[node name="Home" type="Node2D" node_paths=PackedStringArray("CatObj")]
+script = ExtResource("1_tcsw8")
+CatObj = NodePath("Cat")
+
+[node name="RoomSprite" type="Sprite2D" parent="."]
+position = Vector2(375, 341)
+scale = Vector2(1.4804688, 1.4804688)
+texture = ExtResource("1_pdm55")
+
+[node name="Decour" type="Node2D" parent="."]
+
+[node name="Shelf" parent="Decour" instance=ExtResource("4_ijikq")]
+position = Vector2(91, 396)
+
+[node name="CatBed" parent="Decour" instance=ExtResource("5_cnulb")]
+position = Vector2(374, 282)
+
+[node name="WindowBlinds" parent="Decour" instance=ExtResource("6_86718")]
+position = Vector2(295, 177)
+
+[node name="WindowBlinds2" parent="Decour" instance=ExtResource("6_86718")]
+position = Vector2(157, 249)
+
+[node name="CatPoster_1" parent="Decour" instance=ExtResource("7_7jr3y")]
+position = Vector2(647, 273.00003)
+scale = Vector2(1.9999951, 1.9999951)
+
+[node name="FloralPoster" parent="Decour" instance=ExtResource("8_buva5")]
+position = Vector2(436, 163)
+
+[node name="PottedPlant" parent="Decour" instance=ExtResource("8_3lay1")]
+position = Vector2(98, 354)
+
+[node name="FoodBowl" parent="Decour" instance=ExtResource("9_gdnq8")]
+position = Vector2(174, 381)
+
+[node name="WaterBowl" parent="Decour" instance=ExtResource("10_1pwa2")]
+position = Vector2(218, 362)
+
+[node name="WindowRegular" parent="Decour" instance=ExtResource("11_5d6rq")]
+position = Vector2(546, 215)
+
+[node name="Plant" parent="Decour" instance=ExtResource("12_7kesi")]
+position = Vector2(387, 594)
+
+[node name="CatTree" parent="Decour" instance=ExtResource("13_x5f03")]
+position = Vector2(671, 441)
+
+[node name="Cat" parent="." instance=ExtResource("2_xcs4j")]
+position = Vector2(376, 428)
+
+[node name="NavRegion" type="NavigationRegion2D" parent="."]
+unique_name_in_owner = true
+navigation_polygon = SubResource("NavigationPolygon_ua51m")
+
+[node name="CatTerminal" parent="." instance=ExtResource("15_ua51m")]
+position = Vector2(762, 0)

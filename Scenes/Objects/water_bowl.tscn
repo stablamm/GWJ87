@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://ce5wiehusx44f"]
+
+[ext_resource type="Texture2D" uid="uid://gmfrg8bdo3wi" path="res://Assets/Decorations/CatRoomDecorations.png" id="1_embai"]
+
+[node name="WaterBowl" type="Node2D"]
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_embai")
+region_enabled = true
+region_rect = Rect2(461, 438, 43, 37)

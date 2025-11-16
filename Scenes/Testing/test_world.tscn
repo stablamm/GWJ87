@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://qgg3admxfhg8"]
+
+[ext_resource type="Script" uid="uid://b4o3xk4mm22nq" path="res://Scenes/Testing/TestWorld.cs" id="1_s4806"]
+[ext_resource type="PackedScene" uid="uid://qm3cvsipfpbv" path="res://Scenes/Entities/Cats/cat.tscn" id="2_nn7un"]
+
+[node name="TestWorld" type="Node2D" node_paths=PackedStringArray("CatObj")]
+script = ExtResource("1_s4806")
+CatObj = NodePath("Cat")
+
+[node name="Cat" parent="." instance=ExtResource("2_nn7un")]
+position = Vector2(451, 261)
