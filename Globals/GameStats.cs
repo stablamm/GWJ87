@@ -12,8 +12,8 @@ public partial class GameStats : Node
     public int Health { get; private set; } = 100;
     public int Hunger { get; private set; } = 50;
     public int Happiness { get; private set; } = 50;
-    public int Energy { get; private set; } = 80;
-    public int Cleanliness { get; private set; } = 80;
+    public int Energy { get; private set; } = 50;
+    public int Cleanliness { get; private set; } = 50;
     public int Decay { get; private set; } = 0;
 
     private int ticksBeforeDecay = 0;
@@ -23,7 +23,14 @@ public partial class GameStats : Node
     {
         Instance = this;
 
+        SignalManager.Instance.DayChanged += OnDayChanged;
         SignalManager.Instance.TimeOfDayChanged += OnTimeOfDayChanged;
+        SignalManager.Instance.HealthChanged += OnHealthChanged;
+        SignalManager.Instance.HungerChanged += OnHungerChanged;
+        SignalManager.Instance.HappinessChanged += OnHappinessChanged;
+        SignalManager.Instance.EnergyChanged += OnEnergyChanged;
+        SignalManager.Instance.CleanlinessChanged += OnCleanlinessChanged;
+        SignalManager.Instance.DecayChanged += OnDecayChanged;
     }
 
     public void OnDayChanged(int newDay)
@@ -49,6 +56,9 @@ public partial class GameStats : Node
     
     public void OnCleanlinessChanged(int newCleanliness)
         => Cleanliness = newCleanliness;
+
+    public void OnDecayChanged(int newDecay)
+        => Decay = newDecay;
 
     public void DecayStats()
     {

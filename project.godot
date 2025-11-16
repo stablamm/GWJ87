@@ -20,6 +20,8 @@ config/icon="res://icon.svg"
 SignalManager="*res://Globals/SignalManager.cs"
 GameStats="*res://Globals/GameStats.cs"
 TimeManager="*res://Globals/TimeManager.cs"
+RoutineManager="*res://Globals/RoutineManager.cs"
+CatManager="*res://Globals/CatManager.cs"
 
 [dotnet]
 

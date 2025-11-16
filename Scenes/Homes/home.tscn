@@ -17,8 +17,8 @@
 [ext_resource type="PackedScene" uid="uid://dju11ohs16vte" path="res://Scenes/UI/cat_terminal.tscn" id="15_ua51m"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_ua51m"]
-vertices = PackedVector2Array(601.5, 443.60938, 641.5469, 468.1797, 448.14063, 566.6719, 406.1797, 489.4297, 399.9375, 334.70313, 366.0703, 486.46094, 332.3828, 583.6719, 110.27344, 465.46094, 271.52344, 368.32813, 357.9922, 338.28906, 441.10938, 301, 638.96094, 409.09375, 245.9375, 339.78906, 313.03125, 303.85156)
-polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(4, 5, 6, 7, 8, 9), PackedInt32Array(4, 10, 11, 0, 3, 5), PackedInt32Array(8, 12, 13, 9)])
+vertices = PackedVector2Array(601.5, 443.60938, 641.5469, 468.1797, 448.14063, 566.6719, 406.1797, 489.4297, 399.9375, 334.70313, 366.0703, 486.46094, 332.3828, 583.6719, 110.27344, 465.46094, 206.11719, 407.72656, 271.52344, 368.32813, 357.9922, 338.28906, 441.10938, 301, 638.96094, 409.09375, 245.9375, 339.78906, 313.03125, 303.85156)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(4, 5, 6, 7, 8, 9, 10), PackedInt32Array(4, 11, 12, 0, 3, 5), PackedInt32Array(9, 13, 14, 10)])
 outlines = Array[PackedVector2Array]([PackedVector2Array(314, 292, 230, 337, 256, 366, 90, 466, 338, 598, 373, 497, 400, 499, 444, 580, 662, 469, 618, 442, 656, 407, 440, 289, 396, 325, 361, 328)])
 
 [node name="Home" type="Node2D" node_paths=PackedStringArray("CatObj")]
@@ -78,3 +78,17 @@ navigation_polygon = SubResource("NavigationPolygon_ua51m")
 
 [node name="CatTerminal" parent="." instance=ExtResource("15_ua51m")]
 position = Vector2(762, 0)
+
+[node name="Markers" type="Node2D" parent="."]
+
+[node name="FoodBowlMarker" type="Marker2D" parent="Markers"]
+unique_name_in_owner = true
+position = Vector2(196, 417)
+
+[node name="WaterBowlMarker" type="Marker2D" parent="Markers"]
+unique_name_in_owner = true
+position = Vector2(238, 394)
+
+[node name="BedMarker" type="Marker2D" parent="Markers"]
+unique_name_in_owner = true
+position = Vector2(383, 287)

@@ -1,4 +1,5 @@
 using Godot;
+using GWJ87.Globals;
 using System.Collections.Generic;
 
 namespace GWJ87.Scenes.Entities.Cats;
@@ -46,12 +47,22 @@ public partial class Cat : CharacterBody2D
         RIGHT
     }
 
+    public enum CAT_STATE
+    {
+        IDLING,
+        MOVING,
+        PLAYING,
+        SLEEPING,
+        FEEDING,
+        FULL
+    }
 
     [Export] public CAT_COLORS CurrentColor { get; private set; } = CAT_COLORS.DEFAULT;
     [Export] public float Speed { get; set; } = 100f;
 
     public CAT_ANIMATIONS CurrentAnimation { get; private set; } = CAT_ANIMATIONS.IDLE;
     public CAT_DIRECTION CurrentDirection { get; private set; } = CAT_DIRECTION.RIGHT;
+    public CAT_STATE CurrentState { get; set; } = CAT_STATE.IDLING;
 
     private Dictionary<CAT_COLORS, Texture2D> ColorToSprite = new()
     {
@@ -66,43 +77,58 @@ public partial class Cat : CharacterBody2D
     private Sprite2D Sprite;
     private AnimationPlayer AnimPlayer;
     private NavigationAgent2D NavAgent;
+    private Timer IdleTimer;
 
     public override void _Ready()
     {
         Sprite = GetNode<Sprite2D>("%Sprite");
         AnimPlayer = GetNode<AnimationPlayer>("%AnimPlayer");
         NavAgent = GetNode<NavigationAgent2D>("%NavAgent");
+        IdleTimer = GetNode<Timer>("%IdleTimer");
         SetColor(CurrentColor);
+        AnimPlayer.Play(CurrentAnimation.ToString());
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        if (!NavAgent.IsNavigationFinished())
+        if (CatManager.Instance.IsMoving)
         {
-            Vector2 next = NavAgent.GetNextPathPosition();
-            Vector2 dir = GlobalPosition.DirectionTo(next);
-            Velocity = dir * Speed;
-            MoveAndSlide();
-
-            if (NavAgent.GetNextPathPosition().X < GlobalPosition.X)
+            if (CatManager.Instance.UseNavAgent)
             {
-                CurrentDirection = CAT_DIRECTION.LEFT;
+                ProcessNavAgent();
             }
-            else if (NavAgent.GetNextPathPosition().X > GlobalPosition.X)
+            else
             {
-                CurrentDirection = CAT_DIRECTION.RIGHT;
+                ProcessManualMovement();
             }
-
-            GD.Print($"CurrentDirection: {CurrentDirection}");
-            FlipSprite();
         }
         else
         {
-            Velocity = Vector2.Zero;
-            SetAnimation(CAT_ANIMATIONS.IDLE);
+            // If we're not idling, and the timer is stopped, start it.
+            // Else if the timer is running and we're not idling, stop it.
+            if (IdleTimer.TimeLeft == 0 && CurrentState == CAT_STATE.IDLING)
+                IdleTimer.Start();
+            else if (IdleTimer.TimeLeft > 0 && CurrentState != CAT_STATE.IDLING)
+                IdleTimer.Stop();
 
-            SignalManager.Instance.EmitCatDestinationReached();
+            if (CurrentState == CAT_STATE.FEEDING)
+            {
+                HandleFeedingRoutine();
+            }
+            else if (CurrentState == CAT_STATE.FULL)
+            {
+                HandleFullRoutine();
+            }
+            else if (CurrentState == CAT_STATE.SLEEPING)
+            {
+                HandleSleepingRoutine();
+            }
         }
+    }
+
+    private void OnIdleTimerTimeout()
+    {
+        SignalManager.Instance.EmitRequestRandomPosition();
     }
 
     public void SetColor(CAT_COLORS newColor)
@@ -119,13 +145,25 @@ public partial class Cat : CharacterBody2D
         AnimPlayer.Play(newAnimation.ToString());
     }
 
-    public void SetTargetPosition(Vector2 targetPos)
+    public void SetTargetPosition(Vector2 targetPos, bool useNavAgent)
     {
-        NavAgent.TargetPosition = targetPos;
+        CatManager.Instance.SetUseNavAgent(useNavAgent);
+
+        if (CatManager.Instance.UseNavAgent)
+        {
+            NavAgent.TargetPosition = targetPos;
+        }
+        else
+        {
+            CatManager.Instance.SetTargetPosition(targetPos);
+        }
+
         SetAnimation(CAT_ANIMATIONS.RUNNING);
+        CatManager.Instance.SetIsMoving(true);
     }
 
-    // Will only flip sprite if the animation needs it, but call this everytime you change animation or direction
+    // Will only flip sprite if the animation needs it,
+    // but call this everytime you change animation or direction
     public void FlipSprite()
     {
         if (CurrentAnimation == CAT_ANIMATIONS.IDLE
@@ -168,6 +206,114 @@ public partial class Cat : CharacterBody2D
             {
                 Sprite.FlipH = false;
             }
+        }
+    }
+
+    public void StartFeedRoutine() => CurrentState = CAT_STATE.FEEDING;
+    public void StartSleepRoutine() => CurrentState = CAT_STATE.SLEEPING;
+    public bool CanChangeRoutine() => CurrentState != CAT_STATE.FULL;
+
+    private void ProcessNavAgent()
+    {
+        if (!NavAgent.IsNavigationFinished())
+        {
+            Vector2 next = NavAgent.GetNextPathPosition();
+            Vector2 dir = GlobalPosition.DirectionTo(next);
+            Velocity = dir * Speed;
+            MoveAndSlide();
+
+            if (NavAgent.GetNextPathPosition().X < GlobalPosition.X)
+            {
+                CurrentDirection = CAT_DIRECTION.LEFT;
+            }
+            else if (NavAgent.GetNextPathPosition().X > GlobalPosition.X)
+            {
+                CurrentDirection = CAT_DIRECTION.RIGHT;
+            }
+
+            FlipSprite();
+        }
+        else
+        {
+            Velocity = Vector2.Zero;
+            SetAnimation(CAT_ANIMATIONS.IDLE);
+            SignalManager.Instance.EmitCatDestinationReached();
+            CatManager.Instance.SetIsMoving(false);
+        }
+    }
+
+    private void ProcessManualMovement()
+    {
+        Vector2 dir = GlobalPosition.DirectionTo(CatManager.Instance.TargetPosition);
+        Velocity = dir * Speed;
+        MoveAndSlide();
+
+        if (CatManager.Instance.TargetPosition.X < GlobalPosition.X)
+        {
+            CurrentDirection = CAT_DIRECTION.LEFT;
+        }
+        else if (CatManager.Instance.TargetPosition.X > GlobalPosition.X)
+        {
+            CurrentDirection = CAT_DIRECTION.RIGHT;
+        }
+
+        FlipSprite();
+
+        // If we are within 5 pixels of the target position, stop moving
+        if (GlobalPosition.DistanceTo(CatManager.Instance.TargetPosition) < 5f)
+        {
+            CatManager.Instance.SetTargetPosition(Vector2.Zero);
+            Velocity = Vector2.Zero;
+            SetAnimation(CAT_ANIMATIONS.IDLE);
+            SignalManager.Instance.EmitCatDestinationReached();
+            CatManager.Instance.SetIsMoving(false);
+        }
+    }
+
+    private void HandleFeedingRoutine()
+    {
+        if (RoutineManager.Instance.CurrentRoutine != RoutineManager.CURRENT_ROUTINE.FEEDING)
+        {
+            RoutineManager.Instance.StopRoutine();
+            RoutineManager.Instance.StartRoutine(RoutineManager.CURRENT_ROUTINE.FEEDING);
+        }
+
+        if (GameStats.Instance.Hunger == 0)
+        {
+            CurrentState = CAT_STATE.FULL;
+            SetAnimation(CAT_ANIMATIONS.FULL);
+            RoutineManager.Instance.StopRoutine();
+        }
+    }
+
+    private void HandleSleepingRoutine()
+    {
+        if (RoutineManager.Instance.CurrentRoutine != RoutineManager.CURRENT_ROUTINE.SLEEPING)
+        {
+            RoutineManager.Instance.StopRoutine();
+            RoutineManager.Instance.StartRoutine(RoutineManager.CURRENT_ROUTINE.SLEEPING);
+        }
+
+        if (!CatManager.Instance.IsMoving && CurrentAnimation != CAT_ANIMATIONS.SLEEPING)
+        {
+            SetAnimation(CAT_ANIMATIONS.SLEEPING);
+        }
+
+        if (GameStats.Instance.Energy >= 100)
+        {
+            CurrentState = CAT_STATE.IDLING;
+            SetAnimation(CAT_ANIMATIONS.IDLE);
+            SignalManager.Instance.EmitRequestRandomPosition();
+            RoutineManager.Instance.StopRoutine();
+        }
+    }
+
+    private void HandleFullRoutine()
+    {
+        if (GameStats.Instance.Hunger > 5)
+        {
+            CurrentState = CAT_STATE.IDLING;
+            SetAnimation(CAT_ANIMATIONS.IDLE);
         }
     }
 }

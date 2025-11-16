@@ -12,7 +12,10 @@ public partial class SignalManager : Node
     [Signal] public delegate void HappinessChangedEventHandler(int newHappiness);
     [Signal] public delegate void EnergyChangedEventHandler(int newEnergy);
     [Signal] public delegate void CleanlinessChangedEventHandler(int newCleanliness);
-
+    [Signal] public delegate void DecayChangedEventHandler(int newDecay);
+    [Signal] public delegate void StartFeedRoutineEventHandler();
+    [Signal] public delegate void StartSleepRoutineEventHandler();
+    [Signal] public delegate void RequestRandomPositionEventHandler(); // Cat will request a random position after being idle for a certain amount of time.
 
     public override void _Ready()
     {
@@ -27,4 +30,8 @@ public partial class SignalManager : Node
     public void EmitHappinessChanged(int newHappiness) => EmitSignal(SignalName.HappinessChanged, newHappiness);
     public void EmitEnergyChanged(int newEnergy) => EmitSignal(SignalName.EnergyChanged, newEnergy);
     public void EmitCleanlinessChanged(int newCleanliness) => EmitSignal(SignalName.CleanlinessChanged, newCleanliness);
+    public void EmitDecayChanged(int newDecay) => EmitSignal(SignalName.DecayChanged, newDecay);
+    public void EmitStartFeedRoutine() => EmitSignal(SignalName.StartFeedRoutine);
+    public void EmitStartSleepRoutine() => EmitSignal(SignalName.StartSleepRoutine);
+    public void EmitRequestRandomPosition() => EmitSignal(SignalName.RequestRandomPosition);
 }

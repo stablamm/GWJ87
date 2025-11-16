@@ -50,6 +50,7 @@ public partial class CatTerminal : Node2D
     private void OnFeedButtonPressed()
     {
         GD.Print("Feed Button Pressed");
+        SignalManager.Instance.EmitStartFeedRoutine();
     }
 
     private void OnCleanButtonPressed()
@@ -60,6 +61,12 @@ public partial class CatTerminal : Node2D
     private void OnPlayButtonPressed()
     {
         GD.Print("Play Button Pressed");
+    }
+
+    private void OnSleepButtonPressed()
+    {
+        GD.Print("Sleep Button Pressed");
+        SignalManager.Instance.EmitStartSleepRoutine();
     }
 
     private void OnPurifyButtonPressed()

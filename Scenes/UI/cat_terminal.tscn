@@ -221,11 +221,26 @@ size_flags_horizontal = 3
 layout_mode = 2
 text = "Play"
 
-[node name="PurifyButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_2"]
+[node name="SleepButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_2"]
+layout_mode = 2
+text = "Sleep"
+
+[node name="RightBuffer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ActionButtons_3" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer"]
+layout_mode = 2
+
+[node name="LeftBuffer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_3"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PurifyButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_3"]
 layout_mode = 2
 text = "Purify"
 
-[node name="RightBuffer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_2"]
+[node name="RightBuffer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_3"]
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -239,4 +254,5 @@ text = "The cat's recent status [tornado]updates[/tornado] go here."
 [connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_1/FeedButton" to="." method="OnFeedButtonPressed"]
 [connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_1/CleanButton" to="." method="OnCleanButtonPressed"]
 [connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_2/PlayButton" to="." method="OnPlayButtonPressed"]
-[connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_2/PurifyButton" to="." method="OnPurifyButtonPressed"]
+[connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_2/SleepButton" to="." method="OnSleepButtonPressed"]
+[connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_3/PurifyButton" to="." method="OnPurifyButtonPressed"]
