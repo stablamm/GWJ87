@@ -194,6 +194,10 @@ layout_mode = 2
 [node name="ActionButtons_1" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer"]
 layout_mode = 2
 
+[node name="LeftBuffer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_1"]
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="FeedButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_1"]
 layout_mode = 2
 text = "Feed"
@@ -202,8 +206,16 @@ text = "Feed"
 layout_mode = 2
 text = "Clean"
 
+[node name="RightBuffer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_1"]
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="ActionButtons_2" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer"]
 layout_mode = 2
+
+[node name="LeftBuffer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_2"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="PlayButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_2"]
 layout_mode = 2
@@ -212,6 +224,10 @@ text = "Play"
 [node name="PurifyButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_2"]
 layout_mode = 2
 text = "Purify"
+
+[node name="RightBuffer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/CatDetailsContainer/ActionButtons_2"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="Status" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true

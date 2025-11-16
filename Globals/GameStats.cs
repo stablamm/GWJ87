@@ -62,14 +62,13 @@ public partial class GameStats : Node
 
         // Conditional Decay Based On Other Stats
         if (Hunger >= 70)
-            Decay = Mathf.Clamp(Decay += 2, 0, 100);
+            Decay = Mathf.Clamp(Decay += 3, 0, 100);
         if (Happiness <= 30)
-            Decay = Mathf.Clamp(Decay += 2, 0, 100);
+            Decay = Mathf.Clamp(Decay += 1, 0, 100);
         if (Energy <= 30)
-            Decay = Mathf.Clamp(Decay += 2, 0, 100);
+            Decay = Mathf.Clamp(Decay += 1, 0, 100);
         if (Cleanliness <= 30)
-            Decay = Mathf.Clamp(Decay += 2, 0, 100);
-
+            Decay = Mathf.Clamp(Decay += 5, 0, 100);
     }
 
     private bool CanDecay()
