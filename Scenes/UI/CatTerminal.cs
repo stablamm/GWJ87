@@ -56,6 +56,7 @@ public partial class CatTerminal : Node2D
     private void OnCleanButtonPressed()
     {
         GD.Print("Clean Button Pressed");
+        SignalManager.Instance.EmitStartCleanRoutine();
     }
 
     private void OnPlayButtonPressed()

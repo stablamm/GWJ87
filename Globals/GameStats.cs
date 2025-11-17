@@ -79,6 +79,16 @@ public partial class GameStats : Node
             Decay = Mathf.Clamp(Decay += 1, 0, 100);
         if (Cleanliness <= 30)
             Decay = Mathf.Clamp(Decay += 5, 0, 100);
+
+        // Reduce Health Based On Stats
+        /*Hunger*/
+        if (Hunger == 100)
+            Health = Mathf.Clamp(Health -= 5, 0, 100);
+        /*Decay*/
+        if (Decay > 50 && Decay <= 75)
+            Health = Mathf.Clamp(Health -= 1, 0, 100);
+        if (Decay > 75)
+            Health = Mathf.Clamp(Health -= 3, 0, 100);
     }
 
     private bool CanDecay()

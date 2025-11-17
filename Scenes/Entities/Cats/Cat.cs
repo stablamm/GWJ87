@@ -1,5 +1,6 @@
 using Godot;
 using GWJ87.Globals;
+using GWJ87.Scenes.Effects;
 using System.Collections.Generic;
 
 namespace GWJ87.Scenes.Entities.Cats;
@@ -54,7 +55,8 @@ public partial class Cat : CharacterBody2D
         PLAYING,
         SLEEPING,
         FEEDING,
-        FULL
+        FULL,
+        CLEANING
     }
 
     [Export] public CAT_COLORS CurrentColor { get; private set; } = CAT_COLORS.DEFAULT;
@@ -74,6 +76,8 @@ public partial class Cat : CharacterBody2D
         { CAT_COLORS.WHITE, GD.Load<Texture2D>("res://Assets/Cats/AllCatsWhite.png") }
     };
 
+    private bool rainInArea = false;
+
     private Sprite2D Sprite;
     private AnimationPlayer AnimPlayer;
     private NavigationAgent2D NavAgent;
@@ -87,6 +91,10 @@ public partial class Cat : CharacterBody2D
         IdleTimer = GetNode<Timer>("%IdleTimer");
         SetColor(CurrentColor);
         AnimPlayer.Play(CurrentAnimation.ToString());
+
+        SignalManager.Instance.AttemptClean += OnAttemptClean;
+        SignalManager.Instance.ManuallySetCatAnimation += SetAnimation;
+        SignalManager.Instance.ManuallySetCatState += SetState;
     }
 
     public override void _PhysicsProcess(double delta)
@@ -123,12 +131,38 @@ public partial class Cat : CharacterBody2D
             {
                 HandleSleepingRoutine();
             }
+            else if (CurrentState == CAT_STATE.CLEANING)
+            {
+                HandleCleanRoutine();
+            }
         }
     }
 
     private void OnIdleTimerTimeout()
     {
         SignalManager.Instance.EmitRequestRandomPosition();
+    }
+
+    private void OnAttemptClean()
+    {
+        if (rainInArea)
+            RoutineManager.Instance.Clean();
+    }
+
+    private void OnAreaEntered(Area2D area)
+    {
+        if (area.GetParent().GetType() == typeof(RainParticleEffects))
+        {
+            rainInArea = true;
+        }
+    }
+
+    private void OnAreaExited(Area2D area)
+    {
+        if (area.GetParent().GetType() == typeof(RainParticleEffects))
+        {
+            rainInArea = false;
+        }
     }
 
     public void SetColor(CAT_COLORS newColor)
@@ -160,6 +194,12 @@ public partial class Cat : CharacterBody2D
 
         SetAnimation(CAT_ANIMATIONS.RUNNING);
         CatManager.Instance.SetIsMoving(true);
+    }
+
+    public void SetState(CAT_STATE newState)
+    {
+        if (CurrentState != newState)
+            CurrentState = newState;
     }
 
     // Will only flip sprite if the animation needs it,
@@ -212,6 +252,7 @@ public partial class Cat : CharacterBody2D
     public void StartFeedRoutine() => CurrentState = CAT_STATE.FEEDING;
     public void StartSleepRoutine() => CurrentState = CAT_STATE.SLEEPING;
     public bool CanChangeRoutine() => CurrentState != CAT_STATE.FULL;
+    public void StartCleanRoutine() => CurrentState = CAT_STATE.CLEANING;
 
     private void ProcessNavAgent()
     {
@@ -314,6 +355,15 @@ public partial class Cat : CharacterBody2D
         {
             CurrentState = CAT_STATE.IDLING;
             SetAnimation(CAT_ANIMATIONS.IDLE);
+        }
+    }
+
+    private void HandleCleanRoutine()
+    {
+        if (RoutineManager.Instance.CurrentRoutine != RoutineManager.CURRENT_ROUTINE.CLEANING)
+        {
+            RoutineManager.Instance.StopRoutine();
+            RoutineManager.Instance.StartRoutine(RoutineManager.CURRENT_ROUTINE.CLEANING);
         }
     }
 }

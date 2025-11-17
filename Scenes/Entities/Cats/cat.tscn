@@ -456,4 +456,6 @@ wait_time = 5.0
 one_shot = true
 autostart = true
 
+[connection signal="area_entered" from="Area2D" to="." method="OnAreaEntered"]
+[connection signal="area_exited" from="Area2D" to="." method="OnAreaExited"]
 [connection signal="timeout" from="IdleTimer" to="." method="OnIdleTimerTimeout"]

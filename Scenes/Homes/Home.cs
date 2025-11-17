@@ -26,50 +26,21 @@ public partial class Home : Node2D
         SignalManager.Instance.StartFeedRoutine += OnFeedRoutineStarted;
         SignalManager.Instance.RequestRandomPosition += OnRequestRandomPosition;
         SignalManager.Instance.StartSleepRoutine += OnSleepRoutineStarted;
+        SignalManager.Instance.StartCleanRoutine += OnCleanRoutineStarted;
     }
 
     public override void _Process(double delta)
     {
-        if (unpackedRain == null)
+        if (CatObj.CurrentState != Cat.CAT_STATE.CLEANING && unpackedRain != null)
         {
-            unpackedRain = packedRainEffect.Instantiate<RainParticleEffects>();
-            AddChild(unpackedRain);
+            RemoveChild(unpackedRain);
+            unpackedRain.Dispose();
+            unpackedRain = null;
         }
 
-        unpackedRain.GlobalPosition = GetGlobalMousePosition();
-    }
-
-    public override void _Input(InputEvent @event)
-    {
-        if (@event.IsActionPressed("move_up"))
+        if (unpackedRain != null)
         {
-            CatObj.SetColor(Cat.CAT_COLORS.BLACK);
-            CatObj.SetAnimation(Cat.CAT_ANIMATIONS.PLAYFUL);
-
-            var randomPoint = GetRandomNavMeshPoint();
-            CatObj.SetTargetPosition(randomPoint, true);
-            GD.Print($"Random Point: {randomPoint}");
-        }
-        else if (@event.IsActionPressed("move_down"))
-        {
-            CatObj.SetColor(Cat.CAT_COLORS.ORANGE);
-            //CatObj.SetAnimation(Cat.CAT_ANIMATIONS.EXCITED);
-            CatObj.SetTargetPosition(BedMarker.GlobalPosition, false);
-        }
-        else if (@event.IsActionPressed("move_left"))
-        {
-            CatObj.SetColor(Cat.CAT_COLORS.GREY);
-            CatObj.SetAnimation(Cat.CAT_ANIMATIONS.IDLE);
-
-            var packedRainParticles = GD.Load<PackedScene>("res://Scenes/Effects/rain_particle_effects.tscn");
-            RainParticleEffects unpackedRain = packedRainParticles.Instantiate<RainParticleEffects>();
-            AddChild(unpackedRain);
-            unpackedRain.GlobalPosition = new Vector2(200, 200);
-        }
-        else if (@event.IsActionPressed("move_right"))
-        {
-            CatObj.SetColor(Cat.CAT_COLORS.GREYWHITE);
-            CatObj.SetAnimation(Cat.CAT_ANIMATIONS.SLEEPING);
+            unpackedRain.GlobalPosition = GetGlobalMousePosition();
         }
     }
 
@@ -100,6 +71,23 @@ public partial class Home : Node2D
         RoutineManager.Instance.StopRoutine();
         CatObj.StartSleepRoutine();
         CatObj.SetTargetPosition(BedMarker.GlobalPosition, false);
+    }
+
+    private void OnCleanRoutineStarted()
+    {
+        if (CatObj.CurrentState == Cat.CAT_STATE.CLEANING)
+            return;
+        if (!CatObj.CanChangeRoutine())
+            return;
+
+        RoutineManager.Instance.StopRoutine();
+        CatObj.StartCleanRoutine();
+        
+        if (unpackedRain == null)
+        {
+            unpackedRain = packedRainEffect.Instantiate<RainParticleEffects>();
+            AddChild(unpackedRain);
+        }
     }
 
     private void OnRequestRandomPosition()

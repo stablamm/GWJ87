@@ -1,4 +1,5 @@
 using Godot;
+using static GWJ87.Scenes.Entities.Cats.Cat;
 
 public partial class SignalManager : Node
 {
@@ -15,8 +16,12 @@ public partial class SignalManager : Node
     [Signal] public delegate void DecayChangedEventHandler(int newDecay);
     [Signal] public delegate void StartFeedRoutineEventHandler();
     [Signal] public delegate void StartSleepRoutineEventHandler();
+    [Signal] public delegate void StartCleanRoutineEventHandler();
     [Signal] public delegate void RequestRandomPositionEventHandler(); // Cat will request a random position after being idle for a certain amount of time.
-
+    [Signal] public delegate void AttemptCleanEventHandler();
+    [Signal] public delegate void ManuallySetCatAnimationEventHandler(CAT_ANIMATIONS newAnimation);
+    [Signal] public delegate void ManuallySetCatStateEventHandler(CAT_STATE newState);
+    
     public override void _Ready()
     {
         Instance = this;
@@ -33,5 +38,12 @@ public partial class SignalManager : Node
     public void EmitDecayChanged(int newDecay) => EmitSignal(SignalName.DecayChanged, newDecay);
     public void EmitStartFeedRoutine() => EmitSignal(SignalName.StartFeedRoutine);
     public void EmitStartSleepRoutine() => EmitSignal(SignalName.StartSleepRoutine);
+    public void EmitStartCleanRoutine() => EmitSignal(SignalName.StartCleanRoutine);
     public void EmitRequestRandomPosition() => EmitSignal(SignalName.RequestRandomPosition);
+    public void EmitAttemptClean() => EmitSignal(SignalName.AttemptClean);
+    public void EmitManuallySetCatAnimation(CAT_ANIMATIONS newAnimation)
+        => EmitSignal(SignalName.ManuallySetCatAnimation, (int)newAnimation);
+
+    public void EmitManuallySetCatState(CAT_STATE newState)
+        => EmitSignal(SignalName.ManuallySetCatState, (int)newState);
 }
