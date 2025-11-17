@@ -1,6 +1,7 @@
 using Godot;
 using GWJ87.Globals;
 using GWJ87.Scenes.Effects;
+using GWJ87.Scenes.Objects;
 using System.Collections.Generic;
 
 namespace GWJ87.Scenes.Entities.Cats;
@@ -77,6 +78,7 @@ public partial class Cat : CharacterBody2D
     };
 
     private bool rainInArea = false;
+    private bool playToyInArea = false;
 
     private Sprite2D Sprite;
     private AnimationPlayer AnimPlayer;
@@ -93,6 +95,7 @@ public partial class Cat : CharacterBody2D
         AnimPlayer.Play(CurrentAnimation.ToString());
 
         SignalManager.Instance.AttemptClean += OnAttemptClean;
+        SignalManager.Instance.AttemptPlay += OnAttemptPlay;
         SignalManager.Instance.ManuallySetCatAnimation += SetAnimation;
         SignalManager.Instance.ManuallySetCatState += SetState;
     }
@@ -135,11 +138,16 @@ public partial class Cat : CharacterBody2D
             {
                 HandleCleanRoutine();
             }
+            else if (CurrentState == CAT_STATE.PLAYING)
+            {
+                HandlePlayRoutine();
+            }
         }
     }
 
     private void OnIdleTimerTimeout()
     {
+        GD.Print("Requesting Random Position OnIdleTimerTimeout");
         SignalManager.Instance.EmitRequestRandomPosition();
     }
 
@@ -149,11 +157,21 @@ public partial class Cat : CharacterBody2D
             RoutineManager.Instance.Clean();
     }
 
+    private void OnAttemptPlay()
+    {
+        if (playToyInArea)
+            RoutineManager.Instance.Play();
+    }
+
     private void OnAreaEntered(Area2D area)
     {
         if (area.GetParent().GetType() == typeof(RainParticleEffects))
         {
             rainInArea = true;
+        }
+        else if (area.GetParent().GetType() == typeof(PlayTool))
+        {
+            playToyInArea = true;
         }
     }
 
@@ -162,6 +180,10 @@ public partial class Cat : CharacterBody2D
         if (area.GetParent().GetType() == typeof(RainParticleEffects))
         {
             rainInArea = false;
+        }
+        else if (area.GetParent().GetType() == typeof(PlayTool))
+        {
+            playToyInArea = false;
         }
     }
 
@@ -249,10 +271,31 @@ public partial class Cat : CharacterBody2D
         }
     }
 
-    public void StartFeedRoutine() => CurrentState = CAT_STATE.FEEDING;
-    public void StartSleepRoutine() => CurrentState = CAT_STATE.SLEEPING;
-    public bool CanChangeRoutine() => CurrentState != CAT_STATE.FULL;
-    public void StartCleanRoutine() => CurrentState = CAT_STATE.CLEANING;
+    public void StartFeedRoutine()
+    {
+        IdleTimer.Stop();
+        CurrentState = CAT_STATE.FEEDING;
+    }
+    public void StartSleepRoutine()
+    {
+        IdleTimer.Stop();
+        CurrentState = CAT_STATE.SLEEPING;
+    }
+    public bool CanChangeRoutine()
+    {
+        IdleTimer.Stop();
+        return CurrentState != CAT_STATE.FULL;
+    }
+    public void StartCleanRoutine()
+    {
+        IdleTimer.Stop();
+        CurrentState = CAT_STATE.CLEANING;
+    }
+    public void StartPlayRoutine()
+    {
+        IdleTimer.Stop();
+        CurrentState = CAT_STATE.PLAYING;
+    }
 
     private void ProcessNavAgent()
     {
@@ -319,6 +362,11 @@ public partial class Cat : CharacterBody2D
             RoutineManager.Instance.StartRoutine(RoutineManager.CURRENT_ROUTINE.FEEDING);
         }
 
+        if (!CatManager.Instance.IsMoving && CurrentAnimation != CAT_ANIMATIONS.PLAYFUL)
+        {
+            SetAnimation(CAT_ANIMATIONS.PLAYFUL);
+        }
+
         if (GameStats.Instance.Hunger == 0)
         {
             CurrentState = CAT_STATE.FULL;
@@ -364,6 +412,20 @@ public partial class Cat : CharacterBody2D
         {
             RoutineManager.Instance.StopRoutine();
             RoutineManager.Instance.StartRoutine(RoutineManager.CURRENT_ROUTINE.CLEANING);
+        }
+    }
+
+    private void HandlePlayRoutine()
+    {
+        if (RoutineManager.Instance.CurrentRoutine != RoutineManager.CURRENT_ROUTINE.PLAYING)
+        {
+            RoutineManager.Instance.StopRoutine();
+            RoutineManager.Instance.StartRoutine(RoutineManager.CURRENT_ROUTINE.PLAYING);
+        }
+
+        if (!CatManager.Instance.IsMoving && CurrentAnimation != CAT_ANIMATIONS.TICKLE)
+        {
+            SetAnimation(CAT_ANIMATIONS.TICKLE);
         }
     }
 }

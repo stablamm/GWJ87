@@ -9,12 +9,12 @@ public partial class GameStats : Node
     public int DayCount { get; private set; } = 0;
     public string CurrentTime { get; private set; } = string.Empty;
     
-    public int Health { get; private set; } = 100;
+    public int Health { get; private set; } = 50;
     public int Hunger { get; private set; } = 50;
     public int Happiness { get; private set; } = 50;
     public int Energy { get; private set; } = 50;
     public int Cleanliness { get; private set; } = 50;
-    public int Decay { get; private set; } = 0;
+    public int Decay { get; private set; } = 50;
 
     private int ticksBeforeDecay = 0;
     private const int ticksPerDecay = 5;
@@ -89,6 +89,15 @@ public partial class GameStats : Node
             Health = Mathf.Clamp(Health -= 1, 0, 100);
         if (Decay > 75)
             Health = Mathf.Clamp(Health -= 3, 0, 100);
+
+        // Increase Health Based On Stats
+        if (Hunger <= 10
+            && Happiness >= 90 
+            && Energy >= 90
+            && Cleanliness >= 90)
+        {
+            Health = Mathf.Clamp(Health += 5, 0, 100);
+        }
     }
 
     private bool CanDecay()

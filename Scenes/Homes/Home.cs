@@ -2,6 +2,7 @@ using Godot;
 using GWJ87.Globals;
 using GWJ87.Scenes.Effects;
 using GWJ87.Scenes.Entities.Cats;
+using GWJ87.Scenes.Objects;
 
 public partial class Home : Node2D
 {
@@ -9,6 +10,12 @@ public partial class Home : Node2D
 
     private PackedScene packedRainEffect = GD.Load<PackedScene>("res://Scenes/Effects/rain_particle_effects.tscn");
     private RainParticleEffects unpackedRain = null;
+
+    private PackedScene packedPlayTool = GD.Load<PackedScene>("res://Scenes/Objects/play_tool.tscn");
+    private PlayTool unpackedTool = null;
+
+    private PackedScene packedPurifyEffect = GD.Load<PackedScene>("res://Scenes/Effects/purify.tscn");
+    private Purify unpackedPurify = null;
 
     private NavigationRegion2D NavRegion;
     private Marker2D FoodBowlMarker;
@@ -22,11 +29,17 @@ public partial class Home : Node2D
         FoodBowlMarker = GetNode<Marker2D>("%FoodBowlMarker");
         WaterBowlMarker = GetNode<Marker2D>("%WaterBowlMarker");
         BedMarker = GetNode<Marker2D>("%BedMarker");
-
+        
+        unpackedPurify = packedPurifyEffect.Instantiate<Purify>();
+        AddChild(unpackedPurify);
+        
         SignalManager.Instance.StartFeedRoutine += OnFeedRoutineStarted;
         SignalManager.Instance.RequestRandomPosition += OnRequestRandomPosition;
         SignalManager.Instance.StartSleepRoutine += OnSleepRoutineStarted;
         SignalManager.Instance.StartCleanRoutine += OnCleanRoutineStarted;
+        SignalManager.Instance.StartPlayRoutine += OnPlayRoutineStarted;
+        SignalManager.Instance.StartPurifyRoutine += OnPurifyRoutineStarted;
+        SignalManager.Instance.PurifyParticlesFinished += OnPurifyParticlesFinished;
     }
 
     public override void _Process(double delta)
@@ -38,9 +51,21 @@ public partial class Home : Node2D
             unpackedRain = null;
         }
 
+        if (CatObj.CurrentState != Cat.CAT_STATE.PLAYING && unpackedTool != null)
+        {
+            RemoveChild(unpackedTool);
+            unpackedTool.Dispose();
+            unpackedTool = null;
+        }
+
         if (unpackedRain != null)
         {
             unpackedRain.GlobalPosition = GetGlobalMousePosition();
+        }
+
+        if (unpackedTool != null)
+        {
+            unpackedTool.GlobalPosition = GetGlobalMousePosition();
         }
     }
 
@@ -90,11 +115,50 @@ public partial class Home : Node2D
         }
     }
 
+    private void OnPlayRoutineStarted()
+    {
+        if (CatObj.CurrentState == Cat.CAT_STATE.PLAYING)
+            return;
+        if (!CatObj.CanChangeRoutine())
+            return;
+
+        RoutineManager.Instance.StopRoutine();
+        CatObj.StartPlayRoutine();
+
+        if (unpackedTool == null)
+        {
+            unpackedTool = packedPlayTool.Instantiate<PlayTool>();
+            AddChild(unpackedTool);
+        }
+    }
+
+    private void OnPurifyRoutineStarted()
+    {
+        //if (unpackedPurify == null)
+        //{
+        //    unpackedPurify = packedPurifyEffect.Instantiate<Purify>();
+        //    AddChild(unpackedPurify);
+        //}
+        
+        unpackedPurify.GlobalPosition = CatObj.GlobalPosition;
+        unpackedPurify.EmitParticles();
+        
+        RoutineManager.Instance.Purify();
+    }
+
     private void OnRequestRandomPosition()
     {
         var randomPoint = GetRandomNavMeshPoint();
         CatObj.SetTargetPosition(randomPoint, true);
         GD.Print($"Random Point Requested: {randomPoint}");
+    }
+
+    private void OnPurifyParticlesFinished()
+    {
+        //RemoveChild(unpackedPurify);
+        //unpackedPurify.Dispose();
+        //unpackedPurify = null;
+        //GD.Print("PurifyParticles Finished");
     }
 
     /// <summary>

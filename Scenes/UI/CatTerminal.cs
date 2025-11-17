@@ -62,6 +62,7 @@ public partial class CatTerminal : Node2D
     private void OnPlayButtonPressed()
     {
         GD.Print("Play Button Pressed");
+        SignalManager.Instance.EmitStartPlayRoutine();
     }
 
     private void OnSleepButtonPressed()
@@ -73,6 +74,7 @@ public partial class CatTerminal : Node2D
     private void OnPurifyButtonPressed()
     {
         GD.Print("Purify Button Pressed");
+        SignalManager.Instance.EmitStartPurifyRoutine();
     }
 
     private void OnTimeOfDayChanged(string timeOfDay)

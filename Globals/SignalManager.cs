@@ -17,11 +17,15 @@ public partial class SignalManager : Node
     [Signal] public delegate void StartFeedRoutineEventHandler();
     [Signal] public delegate void StartSleepRoutineEventHandler();
     [Signal] public delegate void StartCleanRoutineEventHandler();
+    [Signal] public delegate void StartPlayRoutineEventHandler();
+    [Signal] public delegate void StartPurifyRoutineEventHandler();
     [Signal] public delegate void RequestRandomPositionEventHandler(); // Cat will request a random position after being idle for a certain amount of time.
     [Signal] public delegate void AttemptCleanEventHandler();
+    [Signal] public delegate void AttemptPlayEventHandler();
     [Signal] public delegate void ManuallySetCatAnimationEventHandler(CAT_ANIMATIONS newAnimation);
     [Signal] public delegate void ManuallySetCatStateEventHandler(CAT_STATE newState);
-    
+    [Signal] public delegate void PurifyParticlesFinishedEventHandler();
+
     public override void _Ready()
     {
         Instance = this;
@@ -39,11 +43,18 @@ public partial class SignalManager : Node
     public void EmitStartFeedRoutine() => EmitSignal(SignalName.StartFeedRoutine);
     public void EmitStartSleepRoutine() => EmitSignal(SignalName.StartSleepRoutine);
     public void EmitStartCleanRoutine() => EmitSignal(SignalName.StartCleanRoutine);
+    public void EmitStartPlayRoutine() => EmitSignal(SignalName.StartPlayRoutine);
+    public void EmitStartPurifyRoutine() => EmitSignal(SignalName.StartPurifyRoutine);
     public void EmitRequestRandomPosition() => EmitSignal(SignalName.RequestRandomPosition);
     public void EmitAttemptClean() => EmitSignal(SignalName.AttemptClean);
+    public void EmitAttemptPlay() => EmitSignal(SignalName.AttemptPlay);
+
     public void EmitManuallySetCatAnimation(CAT_ANIMATIONS newAnimation)
         => EmitSignal(SignalName.ManuallySetCatAnimation, (int)newAnimation);
 
     public void EmitManuallySetCatState(CAT_STATE newState)
         => EmitSignal(SignalName.ManuallySetCatState, (int)newState);
+
+    public void EmitPurifyParticlesFinished()
+        => EmitSignal(SignalName.PurifyParticlesFinished);
 }

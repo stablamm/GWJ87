@@ -9,7 +9,8 @@ public partial class RoutineManager : Node
         NONE,
         FEEDING,
         SLEEPING,
-        CLEANING
+        CLEANING,
+        PLAYING
     }
 
     public static RoutineManager Instance { get; private set; }
@@ -33,8 +34,16 @@ public partial class RoutineManager : Node
     private int cleaningTicks = 0;
     #endregion
 
+    #region Playing Routine Variables
+    private bool hasPlayStarted = false;
+    private float playTimer = 1f;
+    private int maxPlayTicks = 5;
+    private int playTicks = 0;
+    #endregion
+
     private Timer timer;
-    private Timer cTimer;
+    private Timer cTimer; // Clean Timer
+    private Timer pTimer; // Play Timer
 
     public override void _Ready()
     {
@@ -53,6 +62,13 @@ public partial class RoutineManager : Node
         cTimer.OneShot = false;
         cTimer.Timeout += OnCleaningTimerTimeout;
         AddChild(cTimer);
+
+        pTimer = new Timer();
+        pTimer.WaitTime = 1.0f;
+        pTimer.Autostart = false;
+        pTimer.OneShot = false;
+        pTimer.Timeout += OnPlayTimerTimeout;
+        AddChild(pTimer);
     }
 
     private void OnTimerTimeout()
@@ -67,6 +83,19 @@ public partial class RoutineManager : Node
         if (cleaningTicks >= maxCleaningTicks)
         {
             // need to stop cleaning
+            StopRoutine();
+
+            SignalManager.Instance.EmitManuallySetCatAnimation(Scenes.Entities.Cats.Cat.CAT_ANIMATIONS.IDLE);
+            SignalManager.Instance.EmitManuallySetCatState(Scenes.Entities.Cats.Cat.CAT_STATE.IDLING);
+        }
+    }
+
+    private void OnPlayTimerTimeout()
+    {
+        playTicks++;
+        if (playTicks >= maxPlayTicks)
+        {
+            // need to stop playing
             StopRoutine();
 
             SignalManager.Instance.EmitManuallySetCatAnimation(Scenes.Entities.Cats.Cat.CAT_ANIMATIONS.IDLE);
@@ -90,6 +119,10 @@ public partial class RoutineManager : Node
         {
             CleaningRoutine();
         }
+        else if (CurrentRoutine == CURRENT_ROUTINE.PLAYING)
+        {
+            PlayingRoutine();
+        }
     }
 
     public void StopRoutine()
@@ -101,9 +134,12 @@ public partial class RoutineManager : Node
         hasSleepingStarted = false;
         hasCleaningStarted = false;
         cleaningTicks = 0;
+        hasPlayStarted = false;
+        playTicks = 0; ;
 
         timer.Stop();
         cTimer.Stop();
+        pTimer.Stop();
     }
 
     public void FeedingRoutine()
@@ -181,6 +217,44 @@ public partial class RoutineManager : Node
         SignalManager.Instance.EmitHappinessChanged(newHappiness);
         SignalManager.Instance.EmitEnergyChanged(newEnergy);
         SignalManager.Instance.EmitCleanlinessChanged(newCleanliness);
+        SignalManager.Instance.EmitDecayChanged(newDecay);
+    }
+
+    public void PlayingRoutine()
+    {
+        if (!hasPlayStarted)
+        {
+            hasPlayStarted = true;
+            playTicks = 0;
+
+            timer.Stop();
+            timer.WaitTime = playTimer;
+            timer.Start();
+
+            pTimer.Stop();
+            pTimer.Start();
+
+            return;
+        }
+
+        SignalManager.Instance.EmitAttemptPlay();
+    }
+
+    public void Play()
+    {
+        int newEnergy = Mathf.Clamp(GameStats.Instance.Energy - 2, 0, 100);
+        int newHappiness = Mathf.Clamp(GameStats.Instance.Happiness + 10, 0, 100);
+        int newCleanliness = Mathf.Clamp(GameStats.Instance.Cleanliness - 2, 0, 100);
+        int newDecay = Mathf.Clamp(GameStats.Instance.Decay - 3, 0, 100);
+        SignalManager.Instance.EmitHappinessChanged(newHappiness);
+        SignalManager.Instance.EmitEnergyChanged(newEnergy);
+        SignalManager.Instance.EmitCleanlinessChanged(newCleanliness);
+        SignalManager.Instance.EmitDecayChanged(newDecay);
+    }
+
+    public void Purify()
+    {
+        int newDecay = Mathf.Clamp(GameStats.Instance.Decay - 30, 0, 100);
         SignalManager.Instance.EmitDecayChanged(newDecay);
     }
 }

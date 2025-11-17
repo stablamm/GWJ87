@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3 uid="uid://d1gd6tv6h8aop"]
+
+[ext_resource type="Script" uid="uid://dubb4f3n65p3x" path="res://Scenes/Effects/Purify.cs" id="1_c2u4c"]
+
+[sub_resource type="Curve" id="Curve_1vr1g"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.15151516, 0.47191018), 0.0, 0.0, 0, 0, Vector2(0.6060606, 0.50561804), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="CurveTexture" id="CurveTexture_c2u4c"]
+curve = SubResource("Curve_1vr1g")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_acw3n"]
+particle_flag_disable_z = true
+emission_shape_scale = Vector3(18.24, 5.125, 1)
+emission_shape = 1
+emission_sphere_radius = 4.16
+inherit_velocity_ratio = 250.0
+spread = 129.828
+initial_velocity_max = 205.87999
+gravity = Vector3(0, 150, 0)
+scale_min = 2.0
+scale_max = 5.0
+scale_curve = SubResource("CurveTexture_c2u4c")
+color = Color(0.13234852, 0.076682456, 0.84822875, 1)
+
+[node name="Purify" type="Node2D"]
+script = ExtResource("1_c2u4c")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+position = Vector2(-3, -24)
+emitting = false
+amount = 50
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_acw3n")
+
+[connection signal="finished" from="GPUParticles2D" to="." method="OnParticlesFinished"]
